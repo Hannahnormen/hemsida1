@@ -24,10 +24,11 @@ h2 {
 
 /* Header */
 header {
-    background-color: #1f1c67; /* Mörkblå header */
-    padding: 50px 20px;
-    color: white;
+     background: linear-gradient(to right, #1f1c67, #0b396a); /* Gradient för modern känsla */
+    padding: 60px 20px;
     text-align: center;
+    color: white;
+    position: relative;
 }
 
 header h1 {

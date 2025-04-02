@@ -7,21 +7,16 @@
   <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
-  <script type="text/javascript">
-    var circle_x = 0;
-    var circle_y = 0;
-  </script>
 
   <style>
     body {
-      background-color: #000f1f; /* Mörkblå bakgrund */
-      color: rgb(27, 21, 88); /* Vit text för kontrast */
+      background-color: #000f1f;
+      color: rgb(27, 21, 88);
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
     }
 
-    /* Container för knappen med titel och info */
     #order-container {
       position: absolute;
       top: 20px;
@@ -43,8 +38,7 @@
       margin-bottom: 15px;
     }
 
-    /* Stil för beställningsknappen */
-    #order-button {
+    .order-button {
       width: 100%;
       padding: 10px;
       background-color: #071149;
@@ -55,11 +49,10 @@
       font-size: 16px;
     }
 
-    #order-button:hover {
+    .order-button:hover {
       background-color: #0f044b;
     }
 
-    /* Stil för tillbakaknappen */
     #back-button {
       width: 100%;
       padding: 10px;
@@ -75,174 +68,27 @@
     #back-button:hover {
       background-color: #e53935;
     }
-
-    /* Stil för modal (popup-formulär) */
-    .modal {
-      display: none; /* Döljer modalen som standard */
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.4); /* Transparent svart bakgrund */
-      overflow: auto;
-    }
-
-    .modal-content {
-      background-color: white;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 400px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-content h3 {
-      margin-top: 0;
-    }
-
-    .modal-content select,
-    .modal-content input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    .modal-content button {
-      width: 100%;
-      padding: 12px;
-      background-color: #170358;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .modal-content button:hover {
-      background-color: #45a049;
-    }
-
-    /* Stil för stäng-knappen */
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
   </style>
 </head>
 
 <body>
   <object id="map" data="lund-map.svg" type="image/svg+xml"></object>
 
-  <!-- Container för knappen med titel och information -->
   <div id="order-container">
-    <h2>Beställ Medicin</h2>
-    <p>Klicka på knappen nedan för att välja din medicin och få den levererad.</p>
-    <button id="order-button" onclick="openModal()">Öppna Beställning</button>
-    <button id="back-button" onclick="goBack()">Tillbaka till Startsidan</button> <!-- Här är tillbaka-knappen -->
+    <h2>Orderstatus</h2>
+    <p>Klicka på knappen nedan för att gå till orderstatus-sidan.</p>
+    <button class="order-button" onclick="goToOrderStatus()">Visa Orderstatus</button>
+    <button id="back-button" onclick="goBack()">Tillbaka till Startsidan</button>
   </div>
-
-  <!-- Modal (Popup-formulär) -->
-  <div id="order-modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h3>Beställ Medicin</h3>
-      <form id="medicine-order">
-        <label for="medicine">Välj medicin:</label>
-        <select id="medicine" name="medicine">
-          <option value="paracetamol">Paracetamol</option>
-          <option value="ibuprofen">Ibuprofen</option>
-          <option value="acetylsalicylsyra">Acetylsalicylsyra</option>
-          <option value="antihistaminer">Antihistaminer</option>
-          <option value="laktosmedel">Laktosintoleransmedel</option>
-          <option value="antacida">Antacida</option>
-          <option value="salvor">Sårsalvor</option>
-          <option value="nassprej">Nässprej</option>
-          <option value="c-vitamin">C-vitamin</option>
-        </select>
-
-        <label for="address">Leveransadress:</label>
-        <input type="text" id="address" name="address" placeholder="Skriv din leveransadress">
-
-        <button type="button" onclick="placeOrder()">Beställ</button>
-      </form>
-    </div>
-  </div>
-
-  <script type="text/javascript" src="static/js/load.js"></script>
 
   <script>
-    // Skapa socket-anslutning till servern
-    var socket = io.connect('http://127.0.0.1:5000');
-
-    socket.on('connect', function() {
-      console.log('Successfully connected to server!');
-      socket.emit('get_location');
-    });
-
-    socket.on('get_location', function(x_data, y_data) {
-      document.getElementById('txt').innerHTML = x_data + ', ' + y_data;
-      circle_x = x_data;
-      circle_y = y_data;
-      var doc = document.getElementById('map').getSVGDocument();
-      var svg = doc.getElementById("map-svg");
-      var drone = svg.getElementById('myDrone');
-      if (drone != null) {
-        drone.setAttributeNS(null, 'cx', circle_x);
-        drone.setAttributeNS(null, 'cy', circle_y);
-        drone.setAttributeNS(null, 'fill', 'red');
-      }
-    });
-
-    // Funktion som hanterar beställning av medicin
-    function placeOrder() {
-      var medicine = document.getElementById('medicine').value;
-      var address = document.getElementById('address').value;
-
-      if (medicine && address) {
-        console.log("Beställning mottagen:");
-        console.log("Medicinen: " + medicine);
-        console.log("Leveransadress: " + address);
-
-        // Skicka beställningen till servern via socket
-        socket.emit('place_order', { medicine: medicine, address: address });
-
-        // Bekräftelsemeddelande till användaren
-        alert("Din beställning har skickats! Leverans till: " + address);
-
-        // Stäng modalen efter beställning
-        closeModal();
-      } else {
-        alert("Vänligen fyll i både medicin och leveransadress.");
-      }
-    }
-
-    // Funktion för att öppna modalen
-    function openModal() {
-      document.getElementById("order-modal").style.display = "block";
-    }
-
-    // Funktion för att stänga modalen
-    function closeModal() {
-      document.getElementById("order-modal").style.display = "none";
+    function goToOrderStatus() {
+      window.location.href = "orderstatus.html";
     }
 
     function goBack() {
-  window.location.href = "index.html"; // Ändra till rätt URL för din startsida
-}
+      window.location.href = "index.html";
+    }
   </script>
 </body>
 </html>

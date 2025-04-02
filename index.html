@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedDrop – Apoteket Online</title>
-    <!-- Google Fonts för bättre typsnitt -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -17,6 +16,14 @@
     </header>
 
     <main>
+        <section class="track-order">
+            <div class="container">
+                <h2>Spåra din order</h2>
+                <label for="order-number">Ange ditt ordernummer:</label>
+                <input type="text" id="order-number" name="order-number" placeholder="Ordernummer...">
+                <button onclick="trackOrder()" class="track-button">Spåra order</button>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -24,5 +31,16 @@
             <p>&copy; 2025 MedDrop. Alla rättigheter reserverade.</p>
         </div>
     </footer>
+
+    <script>
+        function trackOrder() {
+            var orderNumber = document.getElementById("order-number").value;
+            if (orderNumber) {
+                window.location.href = "bestall.html" + encodeURIComponent(orderNumber);
+            } else {
+                alert("Vänligen ange ett ordernummer.");
+            }
+        }
+    </script>
 </body>
 </html>

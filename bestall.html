@@ -10,13 +10,14 @@
 
   <style>
     body {
-      background-color: #000f1f;
-      color: rgb(27, 21, 88);
+      background-color: #000f1f; /* Mörkblå bakgrund */
+      color: rgb(27, 21, 88); /* Vit text för kontrast */
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
     }
 
+    /* Container för knappen med titel och information */
     #order-container {
       position: absolute;
       top: 20px;
@@ -38,6 +39,7 @@
       margin-bottom: 15px;
     }
 
+    /* Stil för knappar */
     .order-button {
       width: 100%;
       padding: 10px;
@@ -68,6 +70,65 @@
     #back-button:hover {
       background-color: #e53935;
     }
+
+    /* Modal stil */
+    .modal {
+      display: none; /* Döljer modalen som standard */
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4); /* Transparent svart bakgrund */
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .modal-content p {
+      font-size: 18px;
+    }
+
+    .modal-content button {
+      width: 100%;
+      padding: 12px;
+      background-color: #170358;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .modal-content button:hover {
+      background-color: #45a049;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -76,18 +137,36 @@
 
   <div id="order-container">
     <h2>Orderstatus</h2>
-    <p>Klicka på knappen nedan för att gå till orderstatus-sidan.</p>
-    <button class="order-button" onclick="goToOrderStatus()">Visa Orderstatus</button>
+    <p>Klicka på knappen nedan för att se nuvarande orderstatus.</p>
+    <button class="order-button" onclick="openModal()">Visa Orderstatus</button>
     <button id="back-button" onclick="goBack()">Tillbaka till Startsidan</button>
   </div>
 
+  <!-- Modal för att visa orderstatus -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3>Orderstatus</h3>
+      <p id="order-info">Här kommer din orderstatus visas...</p>
+      <button onclick="closeModal()">Stäng</button>
+    </div>
+  </div>
+
   <script>
-    function goToOrderStatus() {
-      window.location.href = "orderstatus.html";
+    // Funktion för att öppna modalen
+    function openModal() {
+      // Här kan du lägga till dynamisk data om orderstatus
+      document.getElementById('order-info').textContent = "Order är på väg! Drönare är på väg till din adress!";
+      document.getElementById("order-modal").style.display = "block";
+    }
+
+    // Funktion för att stänga modalen
+    function closeModal() {
+      document.getElementById("order-modal").style.display = "none";
     }
 
     function goBack() {
-      window.location.href = "index.html";
+      window.location.href = "index.html"; // Gå till startsidan
     }
   </script>
 </body>

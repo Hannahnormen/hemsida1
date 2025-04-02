@@ -36,7 +36,8 @@
         function trackOrder() {
             var orderNumber = document.getElementById("order-number").value;
             if (orderNumber) {
-                window.location.href = "bestall.html" + encodeURIComponent(orderNumber);
+                window.location.href = "bestall.html"
+                encodeURIComponent(orderNumber);
             } else {
                 alert("Vänligen ange ett ordernummer.");
             }
